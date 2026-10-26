@@ -149,6 +149,8 @@
   .p-tags{display:flex;flex-wrap:wrap;gap:6px;padding-top:3px;justify-content:flex-end}
   .tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.06em;
     color:var(--ink-dim);border:1px solid var(--line-soft);padding:3px 7px;border-radius:2px;white-space:nowrap}
+  a.tag.live{color:var(--acc);border-color:var(--acc);opacity:.9}
+  a.tag.live:hover{opacity:1;background:color-mix(in srgb,var(--acc) 12%,transparent)}
 
   .p-body{
     display:grid;grid-template-columns:52px minmax(0,1fr) 390px;gap:clamp(16px,2.4vw,32px);
@@ -758,13 +760,13 @@
             <div class="p-idx">08</div>
             <div>
               <div class="p-title">ArchScan — code intelligence with a fix gate</div>
-              <div class="p-line">Point it at a Python project and get a resolved call graph, 18 located issue kinds, an LLM description per function — and a fixer whose patch only counts when the analyzer stops reporting the problem.</div>
+              <div class="p-line">Point it at a Python project and get a resolved call graph, 18 located issue kinds, an LLM description per function — and a fixer whose patch only counts when the analyzer stops reporting the problem. Running live at neuromomen.com.</div>
             </div>
             <div class="p-metrics">
               <div><b><em>18</em> checks</b><span>every finding pinned to a real node id</span></div>
               <div><b><em>0</em> silenced</b><span>noqa / type: ignore forbidden by the prompt</span></div>
             </div>
-            <div class="p-tags"><span class="tag">Python ast</span><span class="tag">FastAPI</span><span class="tag">Cytoscape</span><span class="tag">LLM</span></div>
+            <div class="p-tags"><a class="tag live" href="https://neuromomen.com" target="_blank" rel="noopener">live · neuromomen.com</a><span class="tag">Python ast</span><span class="tag">FastAPI</span><span class="tag">Cytoscape</span><span class="tag">LLM</span></div>
           </summary>
           <div class="p-body">
             <div class="p-body-in">
@@ -797,6 +799,7 @@
                 <li>Token metering with holds; Paddle checkout + HMAC webhook</li>
                 <li>SQLite accounts, sessions, balance</li>
                 <li>Cytoscape viewer: graph, panels, code, issue list</li>
+                <li>Live: <a href="https://neuromomen.com" target="_blank" rel="noopener">neuromomen.com</a> <span class="mono">— five projects free, metered after</span></li>
                 <li>Repo: github.com/Geomanti/archscan <span class="mono">— private, walkthrough on request</span></li>
               </ul>
             </div>
