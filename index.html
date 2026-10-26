@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anton Uralskii — AI Automation Engineer</title>
+<meta name="description" content="AI automation engineer. I run agent fleets that do real work unattended, and I measure whether they actually work. Selected systems, method, and evidence.">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-soft:#101012;
+    --ink:#ecebe6;
+    --ink-dim:#a8a59c;
+    --ink-faint:#6f6d66;
+    --line:rgba(236,235,230,.13);
+    --line-soft:rgba(236,235,230,.07);
+    --acc:#d8ff4a;
+    --acc-dim:rgba(216,255,74,.14);
+    --max:1180px;
+    --pad:clamp(20px,4vw,48px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI Variable Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--acc);color:#0a0a0b}
+  a{color:inherit;text-decoration:none}
+  a:hover{color:var(--acc)}
+  .mono{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  }
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+
+  /* ---------- top bar ---------- */
+  header.bar{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(10px);
+    background:rgba(10,10,11,.82);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .bar-in{display:flex;align-items:center;justify-content:space-between;gap:24px;height:58px}
+  .bar-name{font-weight:600;letter-spacing:-.01em;font-size:15px}
+  .bar-name span{color:var(--ink-faint);font-weight:400}
+  nav.bar-nav{display:flex;gap:26px}
+  nav.bar-nav a{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-dim);
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  nav.bar-nav a:hover{color:var(--ink)}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc);
+    box-shadow:0 0 0 3px rgba(216,255,74,.14);margin-right:9px;vertical-align:middle}
+  .avail{font-size:12px;color:var(--ink-dim);white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
+
+  /* ---------- hero ---------- */
+  .hero{padding:clamp(64px,9vw,120px) 0 clamp(48px,6vw,72px)}
+  .eyebrow{color:var(--ink-faint);margin-bottom:26px}
+  h1{
+    font-size:clamp(38px,6.4vw,76px);
+    line-height:1.02;letter-spacing:-.035em;font-weight:600;
+    margin:0 0 26px;max-width:19ch;text-wrap:balance;
+  }
+  h1 em{font-style:normal;color:var(--acc)}
+  .lede{font-size:clamp(17px,1.6vw,20px);line-height:1.55;color:var(--ink-dim);max-width:62ch;margin:0 0 36px}
+  .lede strong{color:var(--ink);font-weight:500}
+
+  .cta{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:11px 18px;border:1px solid var(--line);border-radius:2px;
+    font-size:13px;letter-spacing:.02em;color:var(--ink);
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+    min-height:44px;
+  }
+  .btn:hover{border-color:var(--acc);color:var(--acc);background:rgba(216,255,74,.04)}
+  .btn.solid{background:var(--acc);color:#0a0a0b;border-color:var(--acc);font-weight:600}
+  .btn.solid:hover{background:#e6ff86;color:#0a0a0b}
+  .cta-note{color:var(--ink-faint);font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* ---------- stat strip ---------- */
+  .stats{
+    margin-top:clamp(48px,6vw,80px);
+    border-top:1px solid var(--line);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .stat{padding:24px 22px 22px;border-right:1px solid var(--line-soft)}
+  .stat:last-child{border-right:0}
+  .stat b{display:block;font-size:clamp(26px,3vw,36px);font-weight:600;letter-spacing:-.03em;line-height:1.1}
+  .stat b i{font-style:normal;color:var(--acc)}
+  .stat span{display:block;margin-top:8px;color:var(--ink-faint);font-size:12px;line-height:1.45}
+  .stat span u{text-decoration:none;color:var(--ink-dim)}
+
+  /* ---------- section scaffolding ---------- */
+  section{padding:clamp(56px,7vw,96px) 0;border-top:1px solid var(--line)}
+  .sec-head{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:start;margin-bottom:clamp(36px,4vw,56px)}
+  .sec-num{color:var(--ink-faint);padding-top:8px}
+  h2{font-size:clamp(26px,3.4vw,40px);line-height:1.12;letter-spacing:-.028em;font-weight:600;margin:0;max-width:24ch;text-wrap:balance}
+  .sec-sub{margin:14px 0 0;color:var(--ink-dim);max-width:60ch;font-size:16px}
+
+  /* ---------- method ---------- */
+  .method-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--line-soft)}
+  .m-item{padding:28px 30px 30px 0;border-bottom:1px solid var(--line-soft)}
+  .m-item:nth-child(odd){border-right:1px solid var(--line-soft);padding-right:34px}
+  .m-item:nth-child(even){padding-left:34px}
+  .m-k{color:var(--acc);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;margin-bottom:12px}
+  .m-item h3{margin:0 0 10px;font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .m-item p{margin:0;color:var(--ink-dim);font-size:15px;line-height:1.62}
+  .m-item p code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+    background:rgba(236,235,230,.06);padding:1px 5px;border-radius:2px;color:var(--ink)
+  }
+
+  /* ---------- pipeline ---------- */
+  .pipe{margin-top:clamp(40px,4vw,56px);border:1px solid var(--line);padding:22px;background:var(--bg-soft)}
+  .pipe-label{color:var(--ink-faint);margin-bottom:18px}
+  .pipe-row{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .pnode{
+    flex:1 1 150px;min-width:140px;padding:12px 14px;
+    border:1px solid var(--line-soft);background:var(--bg-soft);
+  }
+  .pnode b{display:block;font-size:13px;font-weight:600;letter-spacing:-.005em}
+  .pnode span{display:block;margin-top:4px;font-size:11.5px;color:var(--ink-faint);line-height:1.4}
+  .parrow{align-self:center;padding:0 9px;color:var(--ink-faint);font-size:13px}
+
+  /* ---------- projects ---------- */
+  .proj{border-top:1px solid var(--line)}
+  .proj:last-of-type{border-bottom:1px solid var(--line)}
+  details.p{border:0}
+  details.p > summary{
+    list-style:none;cursor:pointer;
+    display:grid;grid-template-columns:52px minmax(0,1fr) 240px 150px;gap:clamp(16px,2.4vw,32px);
+    padding:30px 6px 30px 0;align-items:start;
+    transition:background .15s ease;
+  }
+  details.p > summary::-webkit-details-marker{display:none}
+  details.p > summary:hover{background:rgba(236,235,230,.022)}
+  details.p > summary:hover .p-title{color:var(--acc)}
+  .p-idx{color:var(--ink-faint);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;letter-spacing:.1em;padding-top:6px}
+  .p-title{font-size:clamp(19px,2.1vw,24px);font-weight:600;letter-spacing:-.022em;line-height:1.2;transition:color .15s ease}
+  .p-line{color:var(--ink-dim);font-size:14.5px;line-height:1.55;margin-top:8px;max-width:56ch}
+  .p-metrics{display:flex;flex-direction:column;gap:6px;padding-top:4px}
+  .p-metrics b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;font-weight:500;color:var(--ink)}
+  .p-metrics b em{font-style:normal;color:var(--acc)}
+  .p-metrics span{font-size:11.5px;color:var(--ink-faint);line-height:1.35}
+  .p-tags{display:flex;flex-wrap:wrap;gap:6px;padding-top:3px;justify-content:flex-end}
+  .tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.06em;
+    color:var(--ink-dim);border:1px solid var(--line-soft);padding:3px 7px;border-radius:2px;white-space:nowrap}
+
+  .p-body{
+    display:grid;grid-template-columns:52px minmax(0,1fr) 390px;gap:clamp(16px,2.4vw,32px);
+    padding:0 6px 36px 0;
+  }
+  .p-body-in{grid-column:2;max-width:66ch}
+  .p-body-in p{margin:0 0 16px;color:var(--ink-dim);font-size:15px;line-height:1.65}
+  .p-body-in p:last-child{margin-bottom:0}
+  .p-body-in strong{color:var(--ink);font-weight:600}
+  .p-body-in .note{
+    border-left:1px solid var(--acc);padding:2px 0 2px 14px;color:var(--ink-dim);
+    font-size:14px;margin-top:20px;
+  }
+  .p-body-in .note b{color:var(--ink)}
+  .p-side{grid-column:3;font-size:13px}
+  .p-side h4{margin:0 0 8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-faint);font-weight:400}
+  .p-side ul{margin:0 0 18px;padding:0;list-style:none}
+  .p-side li{color:var(--ink-dim);padding:3px 0;line-height:1.5}
+  .p-side a{color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:1px}
+  .p-side a:hover{color:var(--acc);border-color:var(--acc)}
+  .toggle-hint{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.1em;
+    color:var(--ink-faint);display:flex;align-items:center;gap:6px;padding-top:8px;justify-content:flex-end;
+  }
+  details[open] .toggle-hint{color:var(--acc)}
+  .toggle-hint::after{content:"+";font-size:13px;line-height:1}
+  details[open] .toggle-hint::after{content:"–"}
+
+  /* ---------- also shipped ---------- */
+  .more{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line-soft);margin-top:34px}
+  .more div{padding:22px 24px 22px 0;border-bottom:1px solid var(--line-soft);border-right:1px solid var(--line-soft)}
+  .more div:nth-child(3n){border-right:0}
+  .more div:nth-child(3n+1){padding-left:0}
+  .more div:nth-child(3n+2),.more div:nth-child(3n){padding-left:24px}
+  .more b{display:block;font-size:14.5px;font-weight:600;margin-bottom:5px}
+  .more span{display:block;font-size:13px;color:var(--ink-faint);line-height:1.5}
+
+  /* ---------- stack ---------- */
+  .stack{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 30px}
+  .stack h4{
+    margin:0 0 10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);font-weight:400;
+  }
+  .stack ul{margin:0;padding:0;list-style:none}
+  .stack li{color:var(--ink-dim);font-size:14px;padding:4px 0;border-bottom:1px solid var(--line-soft);line-height:1.45}
+  .stack li:last-child{border-bottom:0}
+
+  /* ---------- background ---------- */
+  .two-col{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(30px,5vw,70px);align-items:start}
+  .two-col p{color:var(--ink-dim);font-size:15.5px;line-height:1.68;margin:0 0 16px;max-width:60ch}
+  .two-col p strong{color:var(--ink);font-weight:500}
+  .facts{border-top:1px solid var(--line-soft)}
+  .fact{display:flex;justify-content:space-between;gap:18px;padding:12px 0;border-bottom:1px solid var(--line-soft);font-size:13.5px}
+  .fact span{color:var(--ink-faint);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;padding-top:2px}
+  .fact b{font-weight:500;color:var(--ink);text-align:right}
+
+  /* ---------- contact ---------- */
+  .contact{padding:clamp(56px,7vw,104px) 0 clamp(48px,6vw,80px);border-top:1px solid var(--line)}
+  .contact h2{font-size:clamp(30px,4.6vw,54px);max-width:22ch;margin-bottom:26px}
+  .contact p{color:var(--ink-dim);max-width:56ch;margin:0 0 32px;font-size:16px}
+  .links{display:flex;flex-wrap:wrap;gap:14px 32px;align-items:center}
+  .links a{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);
+    border-bottom:1px solid var(--line);padding-bottom:3px;min-height:32px}
+  .links a:hover{color:var(--acc);border-color:var(--acc)}
+  .links a i{font-style:normal;color:var(--ink-faint);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.1em}
+  footer{border-top:1px solid var(--line-soft);padding:22px 0 40px}
+  .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--ink-faint);font-size:11.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em}
+
+  /* reveal — hidden only when JS is present, so no-JS and print keep content */
+  .js .rv{opacity:0;transform:translateY(14px);transition:opacity .6s cubic-bezier(.2,.7,.3,1),transform .6s cubic-bezier(.2,.7,.3,1)}
+  .js .rv.in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    .js .rv{opacity:1;transform:none;transition:none}
+    *{transition:none !important}
+  }
+
+  @media print{
+    /* default: light paper version */
+    html:not(.force-dark){
+      --bg:#fff;--bg-soft:#f7f7f5;--ink:#111214;--ink-dim:#3d3d40;--ink-faint:#6b6b6e;
+      --line:rgba(0,0,0,.22);--line-soft:rgba(0,0,0,.12);--acc:#3f6b00;
+      background:#fff;
+    }
+    html:not(.force-dark) body{background:#fff;color:#111}
+    html:not(.force-dark) header.bar{background:#fff}
+    html:not(.force-dark) .btn.solid{color:#fff;background:#2f5200;border-color:#2f5200}
+    html:not(.force-dark) .btn.solid:hover{color:#fff;background:#2f5200}
+
+    /* dark paper version */
+    html.force-dark{background:#0a0a0b;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    html.force-dark .wrap{padding-left:46px;padding-right:46px}
+    html.force-dark .pnode{background:#141417}
+
+    .rv,.js .rv{opacity:1 !important;transform:none !important}
+    header.bar{position:static}
+    details.p > summary{break-inside:avoid;cursor:default}
+    .p-body{display:block !important}
+    section{padding:30px 0;break-inside:auto}
+    .p-side{margin-top:14px}
+    .hero{padding:34px 0 20px}
+    .contact{padding:34px 0 20px}
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:1000px){
+    .sec-head{grid-template-columns:1fr;gap:10px}
+    .sec-num{padding-top:0}
+    details.p > summary{grid-template-columns:40px minmax(0,1fr) 1fr;grid-template-areas:"i t m" "i t g"}
+    .p-idx{grid-area:i}.p-title{grid-area:t}
+    .p-metrics{grid-area:m;flex-direction:row;gap:18px;flex-wrap:wrap;padding-top:0}
+    .p-metrics span{margin-top:0}
+    .p-tags{grid-area:g;justify-content:flex-start;padding-top:10px}
+    .p-body{grid-template-columns:40px minmax(0,1fr)}
+    .p-side{grid-column:2;margin-top:22px}
+    .stack{grid-template-columns:repeat(2,1fr)}
+    .two-col{grid-template-columns:1fr}
+    .more{grid-template-columns:repeat(2,1fr)}
+    .more div:nth-child(3n){border-right:1px solid var(--line-soft)}
+    .more div:nth-child(2n){border-right:0}
+    .more div:nth-child(2n){padding-left:24px}
+    .more div:nth-child(2n+1){padding-left:0}
+  }
+  @media (max-width:900px){
+    nav.bar-nav{display:none}
+  }
+  @media (max-width:820px){
+    body{font-size:16px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .stat{border-bottom:1px solid var(--line-soft)}
+    .stat:nth-child(2){border-right:0}
+    .stat:nth-child(3),.stat:nth-child(4){border-bottom:0}
+    .method-grid{grid-template-columns:1fr}
+    .m-item:nth-child(odd){border-right:0;padding-right:0}
+    .m-item:nth-child(even){padding-left:0}
+    details.p > summary{grid-template-columns:28px minmax(0,1fr);grid-template-areas:"i t" "i m" "i g";padding:24px 0}
+    .p-body{grid-template-columns:28px minmax(0,1fr);padding-bottom:28px}
+    .p-body-in{grid-column:2}
+    .p-side{grid-column:2}
+    .p-metrics{margin-top:12px}
+    .stack{grid-template-columns:1fr 1fr;gap:22px}
+    .more{grid-template-columns:1fr}
+    .more div{border-right:0 !important;padding-left:0 !important}
+    .pipe-row{gap:8px}
+    .parrow{display:none}
+    .pnode{flex:1 1 100%}
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="bar-name">Anton Uralskii <span>— AI Automation</span></div>
+    <nav class="bar-nav">
+      <a href="#method">Method</a>
+      <a href="#work">Work</a>
+      <a href="#stack">Stack</a>
+      <a href="#background">Background</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="avail"><span class="dot"></span>Open to remote roles</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="wrap hero">
+    <div class="mono eyebrow">Bar, Montenegro · CET · remote / B2B</div>
+    <h1>I build AI systems that run unattended — and I <em>measure</em> whether they actually work.</h1>
+    <p class="lede">
+      AI automation engineer. I turn repeated work into agents that touch real systems — files, browsers,
+      APIs, databases, GPUs — and I gate every one of them with tests, evaluations and an approval
+      boundary, because an automation that silently does the wrong thing is worse than none.
+      <strong>Three agent runtimes run for me daily. Four libraries I generalised from them are public.</strong>
+    </p>
+    <div class="cta">
+      <a class="btn solid" href="#work">Selected work</a>
+      <a class="btn" href="https://github.com/Geomanti" target="_blank" rel="noopener">GitHub — Geomanti</a>
+      <span class="cta-note">uralskyanton@gmail.com</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>82<i>×</i></b><span>median inference speedup — <u>predcache</u>, measured, not claimed</span></div>
+      <div class="stat"><b>90<i>%</i></b><span>model inference eliminated on a 10% range extension</span></div>
+      <div class="stat"><b>7<i>/7</i></b><span>mutants killed by the governance eval gate</span></div>
+      <div class="stat"><b>3</b><span>agent runtimes in daily use, each with its own tools and rules</span></div>
+    </div>
+  </div>
+
+  <!-- ============ METHOD ============ -->
+  <section id="method">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <div class="mono sec-num">/ 01 — Method</div>
+        <div>
+          <h2>How I actually use AI</h2>
+          <p class="sec-sub">
+            Not chat. An operating loop: an agent holds the context and the tools, a gate holds the
+            authority, and everything it did is written down. Six rules I hold to across every system below.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-grid">
+        <div class="m-item rv">
+          <div class="m-k">01</div>
+          <h3>Agents, not prompts</h3>
+          <p>Anything that happens twice becomes an agent with its own profile, memory, toolset, schedule and
+             approval policy. Chat is where a task is designed; the agent is where it lives afterwards.</p>
+        </div>
+        <div class="m-item rv">
+          <div class="m-k">02</div>
+          <h3>Tools over talk</h3>
+          <p>The model routes; the tools do the work. Shell, filesystem, browser over CDP, HTTP APIs, SQLite,
+             GPU inference. If a task can't reach a real system, it isn't automated — it's a draft.</p>
+        </div>
+        <div class="m-item rv">
+          <div class="m-k">03</div>
+          <h3>Gates before authority</h3>
+          <p>Irreversible actions — sends, submissions, payments, one-attempt tests — are dry-run first and
+             approved by a human. <code>approvals.mode=manual</code> on the production profile; one-shot
+             checks written down before the button is pressed.</p>
+        </div>
+        <div class="m-item rv">
+          <div class="m-k">04</div>
+          <h3>Least privilege, enforced</h3>
+          <p>A rule in a prompt is a suggestion. I scope the credential so the forbidden write is physically
+             impossible — the withheld capability is absent from the tool registry, not disabled at runtime.</p>
+        </div>
+        <div class="m-item rv">
+          <div class="m-k">05</div>
+          <h3>Measure or don't claim</h3>
+          <p>Every performance number I publish ships with the benchmark that produces it. Where the honest
+             answer was "no reproducible edge", that is what the README says.</p>
+        </div>
+        <div class="m-item rv">
+          <div class="m-k">06</div>
+          <h3>Local first</h3>
+          <p>On-device models when privacy, latency or cost matter: local STT/TTS, cloned voice, local
+             inference. Cloud only where it buys something a laptop GPU can't.</p>
+        </div>
+      </div>
+
+      <div class="pipe rv">
+        <div class="mono pipe-label">The loop every system below runs on</div>
+        <div class="pipe-row">
+          <div class="pnode"><b>Trigger</b><span>cron, webhook, message, file drop</span></div>
+          <div class="parrow">→</div>
+          <div class="pnode"><b>Agent</b><span>model + memory + profile rules</span></div>
+          <div class="parrow">→</div>
+          <div class="pnode"><b>Tools</b><span>shell · browser · API · DB · GPU</span></div>
+          <div class="parrow">→</div>
+          <div class="pnode"><b>Gate</b><span>eval, dry run, human approval</span></div>
+          <div class="parrow">→</div>
+          <div class="pnode"><b>Artifact</b><span>file, record, post, deploy</span></div>
+          <div class="parrow">→</div>
+          <div class="pnode"><b>Log</b><span>trace + lab notebook, prompts verbatim</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORK ============ -->
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <div class="mono sec-num">/ 02 — Work</div>
+        <div>
+          <h2>Systems I designed, built and run</h2>
+          <p class="sec-sub">
+            Seven builds, roughly in order of how much of my working day they own. Open any row for the
+            engineering detail. Numbers are from the code, not from a slide.
+          </p>
+        </div>
+      </div>
+
+      <div class="proj">
+
+        <details class="p" open>
+          <summary>
+            <div class="p-idx">01</div>
+            <div>
+              <div class="p-title">Three-agent operating fleet</div>
+              <div class="p-line">One person, three specialised AI runtimes: documents, business, trading — each with its own tools, memory and approval rules.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>3</em> runtimes</b><span>isolated profiles, shared operator</span></div>
+              <div><b><em>0</em> unapproved</b><span>irreversible actions unattended</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Hermes</span><span class="tag">Telegram</span><span class="tag">cron</span><span class="tag">MCP</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> a self-hosted agent platform on my own machine, split into three
+                profiles that never share state: a document/office agent, a business-operations agent for a
+                real-estate venture, and a trading-research agent. Each has a persistent memory, a skill
+                library, scheduled jobs, and a channel into my phone.</p>
+              <p><strong>What it took:</strong> per-profile state isolation, a Telegram gateway, scheduled jobs
+                that survive restarts, a native MCP client for external tool servers, and hooks that enforce
+                policy before the model ever sees a request — including a guard plugin that filters messages
+                from a non-admin account and pins reply language per sender.</p>
+              <p><strong>Why it matters:</strong> this is the difference between "using ChatGPT" and running
+                automation. The agent answers at 3 a.m. from a queue, writes the file, and leaves an audit
+                trail. I get the outcome, not a transcript.</p>
+              <div class="note"><b>The rule that shapes it:</b> any action I can't undo waits for me. Sends,
+                submissions, purchases, one-attempt assessments — all blocked behind manual approval.</div>
+            </div>
+            <div class="p-side">
+              <h4>Built with</h4>
+              <ul>
+                <li>Python agent runtime, per-profile <code>HERMES_HOME</code></li>
+                <li>Telegram gateway + home-channel routing</li>
+                <li>Cron scheduler, restart-safe state</li>
+                <li>MCP stdio/HTTP tool servers</li>
+                <li>Pre-LLM policy hooks, plugin guard</li>
+              </ul>
+              <h4>Operational detail</h4>
+              <ul>
+                <li>Profiles: documents · business · trading</li>
+                <li>Approvals: manual on production</li>
+                <li>Memory: durable facts, sessions searchable</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">02</div>
+            <div>
+              <div class="p-title">agent-governance</div>
+              <div class="p-line">A governed agent platform where the dangerous action is impossible, not discouraged — plus an evaluation harness whose grader is itself graded.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>53</em> tests</b><span>eval gate: 12 cases / 19 assertions</span></div>
+              <div><b><em>7/7</em> mutants</b><span>killed · audit path CLOSED</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Python</span><span class="tag">MCP</span><span class="tag">MIT</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> an open-source platform for agents that must not autonomously
+                write <em>commitments</em> into a shared work system — an owner, a due date, a status. Three
+                agent tiers (read-only, contact, propose) over an 8-tool registry, with the withheld capability
+                <em>absent</em> from the registry rather than disabled at runtime.</p>
+              <p><strong>What it took:</strong> inversion-first design — start at the failure and work
+                backwards. Four forbidden scopes are rejected at credential construction, so no prompt
+                injection or model error can produce the forbidden write. On top sits an eval suite with a
+                mutation score: the grader is graded, seven of seven mutants killed.</p>
+              <div class="note"><b>Why it's in a portfolio:</b> this is the part of AI automation most people
+                skip. Autonomy without a capability boundary is just risk with a nicer UI.</div>
+            </div>
+            <div class="p-side">
+              <h4>Measured</h4>
+              <ul>
+                <li>Eval gate PASS — 12 cases, 19 assertions</li>
+                <li>Mutation score 7/7 killed</li>
+                <li>Forbidden-path audit: CLOSED</li>
+                <li>Per-agent surface: 3→6 of 8 tools reachable</li>
+              </ul>
+              <h4>Link</h4>
+              <ul><li><a href="https://github.com/Geomanti/agent-governance" target="_blank" rel="noopener">github.com/Geomanti/agent-governance</a></li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">03</div>
+            <div>
+              <div class="p-title">predcache</div>
+              <div class="p-line">Timestamp-keyed prediction cache and batched inference runner for ML models — extracted from a production trading system, published on PyPI.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>82×</em> median</b><span>cold 0.28–0.52 s → warm 0.0034 s</span></div>
+              <div><b><em>90%</em> saved</b><span>38,392 of 42,658 rows from cache</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Python</span><span class="tag">PyPI</span><span class="tag">OTel</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> full-range backtests over 100k+ bars were dominated by redundant
+                model inference. Keying predictions by <em>bar timestamp</em> instead of row index makes any
+                sub-range replayable without offset alignment, and makes incremental runs reuse everything
+                already computed.</p>
+              <p><strong>What it took:</strong> batched scoring, windowed feature assembly with production
+                parameters, and a persistence layer that survives range extensions. Then the uncomfortable
+                part: the original claim — "hours to minutes" — was unverifiable, so the repo ships a benchmark
+                instead of a number. Run the command, get the figures on your machine.</p>
+              <p><strong>Instrumentation:</strong> OpenTelemetry spans for cache lookup, inference batch and
+                feature assembly, plus hit/compute counters — so a team can see whether the cache is actually
+                working in their workload.</p>
+              <div class="note"><b>Honest detail:</b> the median is 82× on the full series with a 100% hit
+                rate; the range extension is the operationally real case, and it eliminates 90% of inference.</div>
+            </div>
+            <div class="p-side">
+              <h4>Benchmark, per run</h4>
+              <ul>
+                <li>42,658 scored rows · batch 500</li>
+                <li>Cold p50 ~2.8 ms, p95 5.5 ms</li>
+                <li>67–133× observed spread, median of 5</li>
+              </ul>
+              <h4>Link</h4>
+              <ul><li><a href="https://pypi.org/project/predcache/" target="_blank" rel="noopener">pypi.org/project/predcache</a></li>
+              <li><a href="https://github.com/Geomanti/predcache" target="_blank" rel="noopener">github.com/Geomanti/predcache</a></li></ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">04</div>
+            <div>
+              <div class="p-title">Neuromomentum — NN trading system + strategy platform</div>
+              <div class="p-line">Three Keras classifiers driving MT5 live execution, a genetic-parameter optimiser, and a node-based strategy builder with training and backtesting in the browser.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>2012–2026</em></b><span>backtest range · 7 FX + 2 crypto</span></div>
+              <div><b><em>54</em> node types</b><span>29 tests · 14 routes · 9 phases</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Keras</span><span class="tag">MQL5</span><span class="tag">FastAPI</span><span class="tag">Next.js</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> a production neural-network trading system — three classifiers,
+                live execution through MetaTrader 5, a Python-side optimiser with genetic search over six
+                parameter groups, and a scale-free input design so one model serves every instrument.</p>
+              <p><strong>The platform:</strong> a commercial node-based strategy designer: 54 node types, graph
+                executor, backtest engine on H4/D1 series, async Keras training with Celery and WebSocket
+                progress, five optimisation algorithms, walk-forward, JWT/SaaS layer, marketplace, broker
+                connections. PostgreSQL 16, Redis 7, Docker + Nginx production stack, GitHub Actions CI,
+                Prometheus metrics.</p>
+              <p><strong>What I learned building it:</strong> how to keep a live system honest — re-optimise
+                every parameter after every retrain, hold out model-blind test chunks, and price spread at
+                reality instead of the flat default.</p>
+              <div class="note"><b>The honest verdict:</b> the strategy research concluded there is no
+                reproducible edge — the neural net barely beat the raw fractal signal, and only volatility was
+                predictable. So I published the infrastructure and kept the conclusion in the README. The
+                engineering is the deliverable; the alpha claim isn't.</div>
+            </div>
+            <div class="p-side">
+              <h4>Stack</h4>
+              <ul>
+                <li>Keras/TF · pandas · numpy</li>
+                <li>MQL5 expert advisor, MT5 execution</li>
+                <li>FastAPI · SQLAlchemy · Alembic</li>
+                <li>Postgres 16 · Redis · Celery</li>
+                <li>Next.js 14 · React Flow · Zustand</li>
+              </ul>
+              <h4>Shipped</h4>
+              <ul>
+                <li>9 phases, tagged and committed</li>
+                <li>29 passing tests, strict TS</li>
+                <li>Prod compose + CI + monitoring</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">05</div>
+            <div>
+              <div class="p-title">Consent-first lead system</div>
+              <div class="p-line">A zero-dependency CRM and intake API built around a legal constraint: Montenegro only allows e-marketing with prior, provable consent.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>852</em> lines</b><span>stdlib only — no pip install</span></div>
+              <div><b><em>3</em> languages</b><span>sr / en / ru consent texts</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Python stdlib</span><span class="tag">SQLite</span><span class="tag">compliance</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> lead intake for a real-estate business, designed evidence-first. A
+                lead cannot be written without <code>consent: true</code> — the endpoint returns 400 and stores
+                nothing. Each record carries the consent version, a SHA-256 hash of the exact wording shown, the
+                timestamp, IP and user agent. Withdrawal appends an event and stamps the lead out of every
+                marketing export, while keeping the record.</p>
+              <p><strong>The AI part:</strong> three parallel research agents worked the primary sources —
+                the data-protection statute and its 2026 replacement, the Electronic Communications Act — and
+                the finding reshaped the product: consent can't be bought, borrowed or scraped, and collected
+                contact data can't be transferred. So the schema became a consent ledger with an evidence chain
+                an inspector would accept.</p>
+              <p><strong>Engineering choices:</strong> SQLite + <code>http.server</code>, zero dependencies, so
+                it runs on any machine the business owns; CSV exports; a company table where only contracted
+                developers may have inventory published.</p>
+              <div class="note"><b>Why it's here:</b> automation that ignores regulation isn't automation, it's
+                liability. The constraint was the design brief.</div>
+            </div>
+            <div class="p-side">
+              <h4>Surfaces</h4>
+              <ul>
+                <li>POST /api/lead — public intake contract</li>
+                <li>GET /api/config — consent texts</li>
+                <li>Admin console + CSV exports</li>
+                <li>consent_events ledger, opt-out stamping</li>
+              </ul>
+              <h4>Ops</h4>
+              <ul>
+                <li>systemd user service, localhost-bound</li>
+                <li>Bearer-token ingest, Meta lead webhook</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">06</div>
+            <div>
+              <div class="p-title">Local real-time voice twin</div>
+              <div class="p-line">Mic → local STT → agent → cloned-voice TTS → talking avatar, with no cloud in the loop and an 8 GB laptop GPU as the only accelerator.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>2.0 s</em></b><span>20-word utterance, CPU only, incl. Opus</span></div>
+              <div><b><em>2</em> voices</b><span>EN + RU clones · ≤40 s reference</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">faster-whisper</span><span class="tag">XTTS</span><span class="tag">LiveTalking</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> a research build that became an operating tool. Local speech
+                recognition, a cloned voice in English and Russian, and a lip-synced avatar driven live — the
+                whole loop running on my own hardware, with voice notes delivered straight into Telegram.</p>
+              <p><strong>What it took:</strong> benchmarking the 2025–26 speech stack before writing anything
+                (Parakeet, faster-whisper, Moonshine, sherpa-onnx for STT; Piper, Kokoro, Chatterbox, XTTS,
+                CosyVoice for TTS), then picking per language: Chatterbox for English, XTTS-v2 for Russian
+                after Chatterbox's Russian accent failed an A/B. Avatar side: chunked TAESD decode, fixed frame
+                pacing and idle-frame alignment to stop lip freezing.</p>
+              <p><strong>Hardware reality:</strong> Blackwell mobile GPU, 8 GB VRAM — small enough that every
+                choice is a real trade-off, which is exactly why the benchmark notes exist.</p>
+              <div class="note"><b>Documented as a lab notebook:</b> prompts verbatim, every failed path kept,
+                so the next iteration starts from evidence instead of memory.</div>
+            </div>
+            <div class="p-side">
+              <h4>Pipeline</h4>
+              <ul>
+                <li>faster-whisper base/large-v3 STT</li>
+                <li>Chatterbox (EN) · XTTS-v2 (RU) clones</li>
+                <li>Piper fallback: 10× real-time, CPU</li>
+                <li>LiveTalking + MuseTalk avatar, WebRTC</li>
+                <li>ffmpeg Opus → Telegram voice bubbles</li>
+              </ul>
+              <h4>Constraint</h4>
+              <ul>
+                <li>RTX 5070 Laptop, 8 GB · CUDA 12.8 wheels</li>
+                <li>Zero recurring API cost</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">07</div>
+            <div>
+              <div class="p-title">Browser automation layer</div>
+              <div class="p-line">Driving a real Windows Chrome from WSL over CDP: job applications, publishing, form filling — with verification gates for everything a bot can't be trusted to do blind.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>464</em> postings</b><span>aggregated and scored in one pipeline</span></div>
+              <div><b><em>4</em> platforms</b><span>ATS, social, marketplaces, portals</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">CDP</span><span class="tag">WSL↔Windows</span><span class="tag">anti-bot</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> a control layer for a logged-in, human-owned browser. No headless
+                fingerprints, no proxy games — WSL orchestrates, Windows Chrome does the clicking, and every
+                submit is preceded by a screenshot check.</p>
+              <p><strong>What it took:</strong> solving the loopback boundary (WSL is NAT-mode, CDP is only
+                reachable from Windows), driving Chrome with a dedicated profile, and building verification
+                gates: detect the challenge, stop, capture the state, escalate to a human instead of retrying
+                into a ban.</p>
+              <p><strong>Where it ran:</strong> 464 postings collected and scored; applications submitted
+                through Greenhouse and a startup's onboarding API; social publishing with a human-approved
+                caption; long-form form filling where a wrong answer is unrecoverable.</p>
+              <div class="note"><b>The lesson that changed my rules:</b> one timed assessment was started before
+                the microphone was verified. It failed in the first minute, was unrepeatable — and became the
+                one-shot rule I now apply to every irreversible action, automated or not.</div>
+            </div>
+            <div class="p-side">
+              <h4>Capabilities</h4>
+              <ul>
+                <li>Session + profile management, port 9222</li>
+                <li>Screenshot-gated submit confirmation</li>
+                <li>Challenge detection → escalate, not retry</li>
+                <li>Rate and behaviour pacing</li>
+              </ul>
+              <h4>Used for</h4>
+              <ul>
+                <li>ATS applications and status verification</li>
+                <li>LinkedIn / Instagram publishing</li>
+                <li>Portal data collection</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="more rv">
+        <div><b>infra-kit — Terraform, AWS + GCP</b><span>9 modules, 2 deployable stacks, 94 test runs / 182 assertions with no cloud account and no credentials.</span></div>
+        <div><b>connector-kit — TypeScript</b><span>Retry with full jitter, circuit breaker, rate limiting, webhook replay protection, Prometheus metrics.</span></div>
+        <div><b>Document pipeline</b><span>Template-preserving DOCX generation from source data, PDF rendering, Drive/Docs hand-off, page-by-page review loop.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STACK ============ -->
+  <section id="stack">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <div class="mono sec-num">/ 03 — Stack</div>
+        <div>
+          <h2>What I build with</h2>
+          <p class="sec-sub">Chosen per problem, not per fashion. The through-line is Python for orchestration, typed TypeScript at the edges, and infrastructure that can be tested without a cloud bill.</p>
+        </div>
+      </div>
+
+      <div class="stack rv">
+        <div>
+          <h4>AI &amp; agents</h4>
+          <ul>
+            <li>Agent runtimes, tool calling</li>
+            <li>MCP servers (stdio / HTTP)</li>
+            <li>Evals, mutation testing</li>
+            <li>Prompt + policy design</li>
+            <li>Local LLM / STT / TTS</li>
+            <li>OpenTelemetry, Prometheus</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Languages</h4>
+          <ul>
+            <li>Python (3.11+)</li>
+            <li>TypeScript / JavaScript</li>
+            <li>SQL</li>
+            <li>MQL5</li>
+            <li>C# (earlier work)</li>
+            <li>Bash / PowerShell</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Backend &amp; data</h4>
+          <ul>
+            <li>FastAPI, SQLAlchemy, Alembic</li>
+            <li>PostgreSQL, SQLite, Redis</li>
+            <li>Celery workers, WebSockets</li>
+            <li>Pydantic, pytest, CI gates</li>
+            <li>REST + webhook integrations</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Delivery</h4>
+          <ul>
+            <li>Docker, docker-compose, Nginx</li>
+            <li>Terraform (AWS, GCP)</li>
+            <li>GitHub Actions</li>
+            <li>systemd, cron, self-hosting</li>
+            <li>Linux (WSL2), Windows interop</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BACKGROUND ============ -->
+  <section id="background">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <div class="mono sec-num">/ 04 — Background</div>
+        <div>
+          <h2>Where the production discipline came from</h2>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="rv">
+          <p><strong>Currently a 3D artist at Kaedim</strong> — studio clients including EA, Unilever,
+            Lotus and TSE — on asset pipelines with hard deadlines, fixed formats and downstream consumers
+            who notice everything. That work taught me the part AI can't supply: what "correct" looks like
+            when someone else has to use it.</p>
+          <p>Automation started as self-defence. Repetitive asset, document and research work became scripts,
+            then agents, then a platform with approvals and logs. The trading system was the same instinct at
+            a larger scale: if I'm going to run something unattended, it needs tests, a holdout set, and an
+            honest verdict at the end.</p>
+          <p><strong>I work in English and Russian</strong>, read Spanish at B1, and I'm based in Bar,
+            Montenegro — one hour from most of Europe, on CET. Operating through my own company,
+            <strong>Neuromomentum DOO</strong>, so remote contracting is straightforward.</p>
+        </div>
+        <div class="facts rv">
+          <div class="fact"><span>Base</span><b>Bar, Montenegro · CET</b></div>
+          <div class="fact"><span>Languages</span><b>EN professional · RU native · ES B1</b></div>
+          <div class="fact"><span>Engagement</span><b>Remote full-time / contract</b></div>
+          <div class="fact"><span>Entity</span><b>Neuromomentum DOO</b></div>
+          <div class="fact"><span>Work permit</span><b>No EU permit — remote / B2B</b></div>
+          <div class="fact"><span>Public code</span><b>4 OSS libraries, Python + TS</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <div class="mono sec-num" style="margin-bottom:18px">/ 05 — Contact</div>
+      <h2>If you have work that repeats, that's the conversation.</h2>
+      <p>Happy to walk through any system above at the code level — including the parts that failed and what
+        they changed.</p>
+      <div class="links">
+        <a href="mailto:uralskyanton@gmail.com"><i>MAIL</i> uralskyanton@gmail.com</a>
+        <a href="https://github.com/Geomanti" target="_blank" rel="noopener"><i>GITHUB</i> github.com/Geomanti</a>
+        <a href="https://www.linkedin.com/in/anton-uralskii-994105284" target="_blank" rel="noopener"><i>LINKEDIN</i> anton-uralskii</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot">
+      <div>Anton Uralskii · Neuromomentum DOO · Bar, Montenegro</div>
+      <div>Built as a single HTML file, no frameworks, no trackers</div>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.rv');
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    els.forEach(function(e){ e.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.08});
+  els.forEach(function(e){ io.observe(e); });
+})();
+
+/* nav: mark current section */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.bar-nav a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (!en.isIntersecting) return;
+      links.forEach(function(l){ l.style.color = ''; });
+      var i = secs.indexOf(en.target);
+      if (i > -1) links[i].style.color = 'var(--ink)';
+    });
+  }, {rootMargin:'-40% 0px -55% 0px'});
+  secs.forEach(function(s){ io.observe(s); });
+})();
+</script>
+</body>
+</html>
