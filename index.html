@@ -422,7 +422,8 @@
         <div>
           <h2>Systems I designed, built and run</h2>
           <p class="sec-sub">
-            Seven builds, roughly in order of how much of my working day they own. Open any row for the
+            Eight builds, roughly in order of how much of my working day they own — the last one shipped this
+            week. Open any row for the
             engineering detail. Numbers are from the code, not from a slide.
           </p>
         </div>
@@ -747,6 +748,56 @@
                 <li>ATS applications and status verification</li>
                 <li>LinkedIn / Instagram publishing</li>
                 <li>Portal data collection</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <details class="p">
+          <summary>
+            <div class="p-idx">08</div>
+            <div>
+              <div class="p-title">ArchScan — code intelligence with a fix gate</div>
+              <div class="p-line">Point it at a Python project and get a resolved call graph, 18 located issue kinds, an LLM description per function — and a fixer whose patch only counts when the analyzer stops reporting the problem.</div>
+            </div>
+            <div class="p-metrics">
+              <div><b><em>18</em> checks</b><span>every finding pinned to a real node id</span></div>
+              <div><b><em>0</em> silenced</b><span>noqa / type: ignore forbidden by the prompt</span></div>
+            </div>
+            <div class="p-tags"><span class="tag">Python ast</span><span class="tag">FastAPI</span><span class="tag">Cytoscape</span><span class="tag">LLM</span></div>
+          </summary>
+          <div class="p-body">
+            <div class="p-body-in">
+              <p><strong>What it is:</strong> static architecture analysis for Python that ends in a verdict instead
+                of a report. Ingest takes a zip or a public repo and keeps only <code>.py</code> files —
+                path-traversal and zip-bomb guarded at 50 MB compressed / 30 MB extracted, credentials redacted
+                <em>before</em> anything is stored or sent to a model.</p>
+              <p><strong>Analysis:</strong> a package → module → class → function graph with resolved call edges, then
+                18 checks over it — import cycles via Tarjan SCC, swallowed errors, god classes, duplicate AST
+                skeletons, mutable defaults, deep nesting, coupling hubs, unreferenced code. Every finding carries its
+                node id, so the UI focuses the exact function rather than a file and a line number.</p>
+              <p><strong>The part that matters:</strong> the AI fixer doesn't get to claim success. The patch is applied
+                to the tree, the analyzer re-runs, and the patch is accepted only if the reported issue is gone — up
+                to three passes, with the failed attempt fed back into the next prompt. After a batch the whole report
+                is rebuilt from the repaired tree, so the graph never shows code you already fixed.</p>
+              <div class="note"><b>Why it's here:</b> the same rule as the governance build, applied to code
+                quality — the model proposes, a deterministic checker disposes.</div>
+            </div>
+            <div class="p-side">
+              <h4>Measured</h4>
+              <ul>
+                <li>922 lines of assert-based self-checks, 8 files</li>
+                <li>No test framework, no network in tests</li>
+                <li>1,889 lines — analyzer 606 · server 741 · billing 542</li>
+                <li>Thresholds are module constants, deliberately editable</li>
+              </ul>
+              <h4>Also in the build</h4>
+              <ul>
+                <li>FastAPI jobs, 1 h TTL, one live job per user</li>
+                <li>Token metering with holds; Paddle checkout + HMAC webhook</li>
+                <li>SQLite accounts, sessions, balance</li>
+                <li>Cytoscape viewer: graph, panels, code, issue list</li>
+                <li>Repo: github.com/Geomanti/archscan <span class="mono">— private, walkthrough on request</span></li>
               </ul>
             </div>
           </div>
